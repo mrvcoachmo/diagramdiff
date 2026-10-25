@@ -1,0 +1,91 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "web-box",
+      "type": "rectangle",
+      "x": 100.04751586914062,
+      "y": 270.5990295410156,
+      "width": 200,
+      "height": 80,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "Zz",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1411611821,
+      "version": 29,
+      "versionNonce": 443251437,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "type": "text",
+          "id": "3r0gZK8C0egIFz3w9o0hQ"
+        }
+      ],
+      "updated": 1792969736200,
+      "link": null,
+      "locked": false,
+      "created": null
+    },
+    {
+      "id": "3r0gZK8C0egIFz3w9o0hQ",
+      "type": "text",
+      "x": 163.08755493164062,
+      "y": 285.5990295410156,
+      "width": 36.9599609375,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "a0",
+      "roundness": null,
+      "seed": 274513869,
+      "version": 30,
+      "versionNonce": 810530403,
+      "isDeleted": false,
+      "boundElements": [],
+      "updated": 1792969736201,
+      "link": null,
+      "locked": false,
+      "text": "Web",
+      "fontSize": 20,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "web-box",
+      "originalText": "Web",
+      "autoResize": true,
+      "lineHeight": 1.25,
+      "created": null,
+      "labelPosition": null,
+      "baseFontSize": null
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
+    "viewBackgroundColor": "#ffffff",
+    "lockedMultiSelections": {}
+  },
+  "files": {}
+}

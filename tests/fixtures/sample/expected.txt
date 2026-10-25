@@ -1,0 +1,6 @@
+old.excalidraw → new.excalidraw: 1 removed, 4 added
+- arrow "Gateway" → "Queue"
++ rectangle "API"
++ rectangle #Aim8XXiCRUQBdeFuAj1Av
++ arrow "API" → #Aim8XXiCRUQBdeFuAj1Av : "HTTP"
++ arrow "API" → (unconnected)
