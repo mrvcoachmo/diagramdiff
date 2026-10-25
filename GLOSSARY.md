@@ -17,7 +17,7 @@ Any part of a Diagram that is not an Edge: a box, a standalone text, a frame, a 
 _Avoid_: element, shape
 
 **Edge**:
-A connection drawn from one Node to another. In Excalidraw only an arrow is an Edge.
+A connection drawn between Nodes; either end may be unconnected. In Excalidraw only an arrow is an Edge.
 _Avoid_: link, connector
 
 **From / To**:
@@ -61,5 +61,5 @@ A difference between two files that is not a Change, such as Layout, style or th
 _Avoid_: cosmetic change
 
 **Membership**:
-The group or frame a Node belongs to. Moving into or out of one is a Change, even where the Format expresses it only through Layout.
+The groups and the frame a Node belongs to. Moving into or out of one is a Change, even where the Format expresses it only through Layout.
 _Avoid_: parent, containment

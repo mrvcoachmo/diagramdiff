@@ -15,6 +15,7 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
     for path in [&cli.old, &cli.new] {
         // Read, not just open: opening a directory succeeds on Unix, reading it fails.
+        // Bytes, not a String: a file that is not UTF-8 is still readable.
         if let Err(err) = fs::read(path) {
             eprintln!("runediff: {}: {err}", path.display());
             return ExitCode::from(2);
