@@ -1,11 +1,11 @@
-# runediff
+# diagramdiff
 
-runediff shows what changed between two versions of a diagram file in the diagram's own terms: Nodes and Edges added and removed, not lines of JSON.
+diagramdiff shows what changed between two versions of a diagram file in the diagram's own terms: Nodes and Edges added and removed, not lines of JSON.
 
 ## Diagrams
 
 **Format**:
-A kind of diagram file runediff reads, such as Excalidraw, JSON Canvas, draw.io or Mermaid. Each Format decides what a Key is.
+A kind of diagram file diagramdiff reads, such as Excalidraw, JSON Canvas, draw.io or Mermaid. Each Format decides what a Key is.
 _Avoid_: file type, parser
 
 **Diagram**:
@@ -43,7 +43,7 @@ _Avoid_: deleted element
 ## Changes
 
 **Change**:
-A difference between the old and the new Diagram that runediff reports.
+A difference between the old and the new Diagram that diagramdiff reports.
 _Avoid_: diff, delta
 
 **Added**:
