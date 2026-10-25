@@ -1,0 +1,10 @@
+[package]
+name = "runediff"
+version = "0.0.1"
+edition = "2024"
+description = "Shows what changed between two diagram files, in the diagram's own terms"
+license = "MIT"
+repository = "https://github.com/mrvcoachmo/runediff"
+
+[dependencies]
+clap = { version = "4.6.7", features = ["derive"] }
