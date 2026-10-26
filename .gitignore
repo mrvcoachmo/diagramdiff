@@ -2,3 +2,4 @@ CLAUDE.local.md
 docs/agents/
 /target
 .DS_Store
+.claude/
