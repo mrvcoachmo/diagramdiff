@@ -1,6 +1,7 @@
-old.excalidraw → new.excalidraw: 0 removed, 5 added
+old.excalidraw → new.excalidraw: 0 removed, 6 added
 + text "Authorization"
 + text "Old file"
 + frame #blank
 + hexagon #hex
 + frame #untitled
++ arrow (unconnected) → (unconnected)

@@ -89,7 +89,7 @@ pub(crate) fn parse(bytes: &[u8]) -> serde_json::Result<(Diagram, Vec<String>)> 
     let edges = arrows
         .into_iter()
         .map(|(key, arrow)| Edge {
-            label: labels.remove(&key),
+            label: labels.remove(&key).filter(|label| !label.is_empty()),
             from: bound_node(arrow.start_binding),
             to: bound_node(arrow.end_binding),
             key,

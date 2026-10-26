@@ -104,9 +104,10 @@ fn read(path: &Path) -> Result<Diagram, String> {
     let bytes = fs::read(path).map_err(|err| format!("{}: {err}", path.display()))?;
     let (diagram, warnings) = excalidraw::parse(&bytes)
         .map_err(|err| format!("{}: not an Excalidraw file: {err}", path.display()))?;
-    report(&plain_lines(warnings.iter().map(|warning| {
-        format!("diagramdiff: {}: {warning}", path.display())
-    })));
+    let warnings = warnings
+        .iter()
+        .map(|warning| format!("diagramdiff: {}: {warning}", path.display()));
+    report(&plain_lines(warnings));
     Ok(diagram)
 }
 
