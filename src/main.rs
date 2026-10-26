@@ -102,7 +102,9 @@ fn line(sign: char, node: &Node) -> String {
 
 /// A Label as the output shows it, without its quotes.
 fn shown(label: &str) -> String {
-    plain(&label.replace("\r\n", "\n").replace('"', "\\\""))
+    // Backslash first, or the one in \" would be escaped too.
+    let escaped = label.replace('\\', "\\\\").replace('"', "\\\"");
+    plain(&escaped.replace("\r\n", "\n"))
 }
 
 /// Control characters, line breaks among them, become spaces: one Change per line,

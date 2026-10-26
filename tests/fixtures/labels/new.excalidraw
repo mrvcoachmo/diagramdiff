@@ -26,6 +26,8 @@
     { "id": "t2", "type": "text", "isDeleted": false, "containerId": "k2", "text": "Legacy" },
     { "id": "kx", "type": "rectangle", "isDeleted": false },
     { "id": "tx", "type": "text", "isDeleted": false, "containerId": "kx", "text": "\u001b[2KHidden", "originalText": "\u001b[2KHidden" },
+    { "id": "kc", "type": "rectangle", "isDeleted": false },
+    { "id": "tc", "type": "text", "isDeleted": false, "containerId": "kc", "text": "C:\\", "originalText": "C:\\" },
     { "id": "n3\nx", "type": "rectangle", "isDeleted": false }
   ]
 }
