@@ -1,11 +1,12 @@
 [package]
 name = "diagramdiff"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2024"
+rust-version = "1.88"
 description = "Shows what changed between two diagram files, in the diagram's own terms"
 license = "MIT"
 repository = "https://github.com/mrvcoachmo/diagramdiff"
-keywords = ["diff", "diagram", "excalidraw", "drawio", "mermaid"]
+keywords = ["diff", "diagram", "excalidraw"]
 categories = ["command-line-utilities", "development-tools"]
 
 [dependencies]

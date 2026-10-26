@@ -57,7 +57,7 @@ This version shows only what was added and removed. A box you relabel, or an arr
 
 ## Exit code
 
-diagramdiff exits 0 when the diagrams differ, like `git diff`, because git stops at a diff tool that exits with anything else; `--exit-code` makes it exit 1 on changes and 0 on none, like `git diff --exit-code`. Errors always exit 2.
+diagramdiff exits 0 when the diagrams differ, like `git diff`, because a planned git diff mode needs it (git stops at a diff tool that exits with anything else); `--exit-code` makes it exit 1 on changes and 0 on none, like `git diff --exit-code`. Errors always exit 2.
 
 ## In code review
 
@@ -135,4 +135,4 @@ diagramdiff:
       done
 ```
 
-Both jobs diff only the diagrams changed in place. Added, deleted and renamed diagrams are skipped for now. If diagramdiff can't read a file, it exits 2 and the job fails.
+Both jobs diff only the diagrams changed in place. Added, deleted and renamed diagrams are skipped for now. If diagramdiff can't read a file, the job stops there and fails.

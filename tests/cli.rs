@@ -283,7 +283,7 @@ fn version_and_help() {
     assert_eq!(version.status.code(), Some(0));
     assert_eq!(
         String::from_utf8(version.stdout).unwrap(),
-        "diagramdiff 0.0.1\n"
+        concat!("diagramdiff ", env!("CARGO_PKG_VERSION"), "\n")
     );
 
     let help = diagramdiff(&["--help"]);
@@ -318,44 +318,53 @@ fn the_readme_shows_the_real_help() {
     assert_readme_shows("diagramdiff --help", diagramdiff(&["--help"]));
 }
 
-/// The shell loop of a README CI job, from `git diff` to `done`.
-fn ci_loop(job: &str) -> String {
-    let start = job
+fn shell_loop(text: &str) -> String {
+    let start = text
         .find("git diff")
         .expect("a README CI job has a git diff loop");
-    let done = start + job[start..].find("done").expect("the loop ends with done");
-    job[start..done + "done".len()]
+    let done = start + text[start..].find("done").expect("the loop ends with done");
+    text[start..done + "done".len()]
         .lines()
         .map(str::trim_start)
         .collect::<Vec<_>>()
         .join("\n")
 }
 
+// A git hook exports GIT_DIR, and ~/.gitconfig may sign commits: neither may reach the test repo.
+fn isolated(program: &str, dir: &Path) -> Command {
+    let mut command = Command::new(program);
+    for (key, _) in std::env::vars_os() {
+        if key.to_string_lossy().starts_with("GIT_") {
+            command.env_remove(key);
+        }
+    }
+    command
+        .env("GIT_CONFIG_NOSYSTEM", "1")
+        .env("HOME", dir)
+        .env("XDG_CONFIG_HOME", dir)
+        .current_dir(dir);
+    command
+}
+
 #[cfg(unix)]
 #[test]
 fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
     let readme = fs::read_to_string("README.md").unwrap();
-    let jobs: Vec<String> = readme.split("```yaml").skip(1).map(ci_loop).collect();
+    let loops: Vec<String> = readme.split("```yaml").skip(1).map(shell_loop).collect();
     assert_eq!(
-        jobs.len(),
+        loops.len(),
         2,
         "the README has one GitHub and one GitLab job"
     );
-    assert_eq!(jobs[0], jobs[1]);
+    assert_eq!(loops[0], loops[1]);
 
     let dir = Path::new(env!("CARGO_TARGET_TMPDIR")).join("ci-loop");
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(dir.join("docs")).unwrap();
-    let no_user_git_config = [
-        ("GIT_CONFIG_GLOBAL", "/dev/null"),
-        ("GIT_CONFIG_NOSYSTEM", "1"),
-    ];
     let git = |args: &[&str]| {
-        let status = Command::new("git")
+        let status = isolated("git", &dir)
             .args(["-c", "user.name=test", "-c", "user.email=test@example.com"])
             .args(args)
-            .envs(no_user_git_config)
-            .current_dir(&dir)
             .status()
             .unwrap();
         assert!(status.success(), "git {args:?}");
@@ -364,14 +373,14 @@ fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
         fs::copy(format!("tests/fixtures/{case}/{file}"), dir.join(to)).unwrap();
     };
     git(&["init", "-q"]);
-    fixture("redrawn", "old.excalidraw", "docs/architecture.excalidraw");
+    fixture("sample", "old.excalidraw", "docs/my diagram.excalidraw");
     fixture("redrawn", "old.excalidraw", "-lead.excalidraw");
-    fixture("sample", "old.excalidraw", "deleted.excalidraw");
+    fixture("redrawn", "old.excalidraw", "deleted.excalidraw");
     git(&["add", "-A"]);
     git(&["commit", "-qm", "base"]);
-    fixture("redrawn", "new.excalidraw", "docs/architecture.excalidraw");
+    fixture("sample", "new.excalidraw", "docs/my diagram.excalidraw");
     fixture("redrawn", "new.excalidraw", "-lead.excalidraw");
-    fixture("sample", "new.excalidraw", "added.excalidraw");
+    fixture("redrawn", "new.excalidraw", "added.excalidraw");
     fs::remove_file(dir.join("deleted.excalidraw")).unwrap();
     git(&["add", "-A"]);
     git(&["commit", "-qm", "pull request"]);
@@ -382,12 +391,10 @@ fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
         bin.parent().unwrap().display(),
         std::env::var("PATH").unwrap()
     );
-    let output = Command::new("bash")
-        .args(["-eo", "pipefail", "-c", &jobs[0]])
+    let output = isolated("bash", &dir)
+        .args(["-eo", "pipefail", "-c", &loops[0]])
         .env("BASE", "HEAD^1")
         .env("PATH", path)
-        .envs(no_user_git_config)
-        .current_dir(&dir)
         .output()
         .unwrap();
 
@@ -397,9 +404,12 @@ fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
         "-lead.excalidraw.old → -lead.excalidraw: 1 removed, 1 added\n\
          - rectangle \"API\"\n\
          + rectangle \"API\"\n\
-         docs/architecture.excalidraw.old → docs/architecture.excalidraw: 1 removed, 1 added\n\
-         - rectangle \"API\"\n\
-         + rectangle \"API\"\n"
+         docs/my diagram.excalidraw.old → docs/my diagram.excalidraw: 1 removed, 4 added\n\
+         - arrow \"Gateway\" → \"Queue\"\n\
+         + rectangle \"API\"\n\
+         + rectangle #Aim8XXiCRUQBdeFuAj1Av\n\
+         + arrow \"API\" → #Aim8XXiCRUQBdeFuAj1Av : \"HTTP\"\n\
+         + arrow \"API\" → (unconnected)\n"
     );
     assert_eq!(output.status.code(), Some(0));
 }
