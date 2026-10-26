@@ -1,6 +1,6 @@
 # diagramdiff
 
-diagramdiff shows what changed between two versions of a diagram, as boxes and arrows added and removed instead of lines of JSON. It reads Excalidraw files for now. MIT licensed.
+diagramdiff shows what changed between two versions of an Excalidraw diagram, as boxes and arrows added and removed instead of lines of JSON. Excalidraw is the only format so far, and draw.io and Mermaid are planned. MIT licensed.
 
 ```
 $ diagramdiff old.excalidraw new.excalidraw
@@ -24,7 +24,7 @@ cargo install diagramdiff --locked
 
 ```
 $ diagramdiff --help
-Shows what changed between two diagram files, in the diagram's own terms
+Shows what changed between two Excalidraw files, in the diagram's own terms
 
 Usage: diagramdiff [OPTIONS] <OLD> <NEW>
 
