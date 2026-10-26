@@ -1,0 +1,31 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "n2", "type": "diamond", "isDeleted": false },
+    { "id": "k0", "type": "rectangle", "isDeleted": false },
+    { "id": "t0", "type": "text", "isDeleted": false, "containerId": "k0", "text": "alpha", "originalText": "alpha" },
+    { "id": "t5", "type": "text", "isDeleted": false, "containerId": "k5", "text": "Ørn", "originalText": "Ørn" },
+    { "id": "k5", "type": "rectangle", "isDeleted": false },
+    { "id": "k1", "type": "rectangle", "isDeleted": false },
+    { "id": "t1", "type": "text", "isDeleted": false, "containerId": "k1", "text": "Beta", "originalText": "Beta" },
+    { "id": "n1", "type": "rectangle", "isDeleted": false },
+    { "id": "k6", "type": "rectangle", "isDeleted": false },
+    { "id": "t6", "type": "text", "isDeleted": false, "containerId": "k6", "text": "Say \"hi\"\nthere", "originalText": "Say \"hi\"\nthere" },
+    { "id": "k4", "type": "ellipse", "isDeleted": false },
+    { "id": "t4", "type": "text", "isDeleted": false, "containerId": "k4", "text": "Beta", "originalText": "Beta" },
+    { "id": "k7", "type": "rectangle", "isDeleted": false },
+    { "id": "t7", "type": "text", "isDeleted": false, "containerId": "k7", "text": "Authenticat\nion", "originalText": "Authentication" },
+    { "id": "k9", "type": "rectangle", "isDeleted": false },
+    { "id": "t9", "type": "text", "isDeleted": false, "containerId": "k9", "text": "Alpha", "originalText": "Alpha" },
+    { "id": "k8", "type": "rectangle", "isDeleted": false },
+    { "id": "t8", "type": "text", "isDeleted": false, "containerId": "k8", "text": "Payment\r\nService", "originalText": "Payment\r\nService" },
+    { "id": "k3", "type": "rectangle", "isDeleted": false },
+    { "id": "t3", "type": "text", "isDeleted": false, "containerId": "k3", "text": "Payment Gateway", "originalText": "Payment Gateway" },
+    { "id": "k2", "type": "rectangle", "isDeleted": false },
+    { "id": "t2", "type": "text", "isDeleted": false, "containerId": "k2", "text": "Legacy" },
+    { "id": "kx", "type": "rectangle", "isDeleted": false },
+    { "id": "tx", "type": "text", "isDeleted": false, "containerId": "kx", "text": "\u001b[2KHidden", "originalText": "\u001b[2KHidden" },
+    { "id": "n3\nx", "type": "rectangle", "isDeleted": false }
+  ]
+}

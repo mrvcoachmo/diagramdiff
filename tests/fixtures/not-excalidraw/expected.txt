@@ -1,0 +1,1 @@
+diagramdiff: new.excalidraw: not an Excalidraw file: missing field `type` at line 6 column 1

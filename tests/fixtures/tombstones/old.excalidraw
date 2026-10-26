@@ -1,0 +1,8 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "gone-box", "type": "rectangle", "isDeleted": false },
+    { "id": "gone-text", "type": "text", "isDeleted": false, "containerId": "gone-box", "text": "Gone", "originalText": "Gone" }
+  ]
+}

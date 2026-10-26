@@ -1,0 +1,6 @@
+{
+  "nodes": [
+    { "id": "api", "type": "text", "text": "API", "x": 0, "y": 0, "width": 200, "height": 80 }
+  ],
+  "edges": []
+}

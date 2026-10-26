@@ -1,0 +1,11 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "gone-box", "type": "rectangle", "isDeleted": true },
+    { "id": "gone-text", "type": "text", "isDeleted": true, "containerId": "gone-box", "text": "Gone", "originalText": "Gone" },
+    { "id": "ghost-box", "type": "rectangle", "isDeleted": true },
+    { "id": "bare-box", "type": "rectangle", "isDeleted": false },
+    { "id": "cleared-text", "type": "text", "isDeleted": true, "containerId": "bare-box", "text": "Cleared", "originalText": "Cleared" }
+  ]
+}

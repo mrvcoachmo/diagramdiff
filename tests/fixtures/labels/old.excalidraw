@@ -1,0 +1,8 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "z", "type": "rectangle", "isDeleted": false },
+    { "id": "tz", "type": "text", "isDeleted": false, "containerId": "z", "text": "Zeta", "originalText": "Zeta" }
+  ]
+}
