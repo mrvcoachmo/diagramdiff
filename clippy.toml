@@ -1,0 +1,2 @@
+# From BeautifulRust lints/clippy.toml (v1.4.0): flag every bool parameter, as report(true) is unreadable where it is called.
+max-fn-params-bools = 0

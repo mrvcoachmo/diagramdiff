@@ -66,12 +66,8 @@ fn run(cli: &Cli) -> Result<(), String> {
         removed.len(),
         added.len()
     );
-    for change in removed {
-        out += &format!("- {change}\n");
-    }
-    for change in added {
-        out += &format!("+ {change}\n");
-    }
+    out.extend(removed.iter().map(|change| format!("- {change}\n")));
+    out.extend(added.iter().map(|change| format!("+ {change}\n")));
     let mut stdout = io::stdout().lock();
     match stdout
         .write_all(out.as_bytes())
@@ -180,7 +176,7 @@ fn plain(text: &str) -> String {
     text.replace(|c: char| c.is_control() || sets_text_direction(c), " ")
 }
 
-/// Unicode's Bidi_Control characters.
+/// Unicode's `Bidi_Control` characters.
 fn sets_text_direction(c: char) -> bool {
     matches!(c, '\u{061C}' | '\u{200E}' | '\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}')
 }

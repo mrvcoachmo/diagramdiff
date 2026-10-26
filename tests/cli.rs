@@ -1,3 +1,5 @@
+#![expect(clippy::unwrap_used, reason = "in a test, a panic is the failure")]
+
 use std::{
     fs,
     io::Write,
