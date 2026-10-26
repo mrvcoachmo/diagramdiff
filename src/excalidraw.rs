@@ -38,7 +38,7 @@ struct Binding {
     element_id: Option<String>,
 }
 
-pub fn parse(bytes: &[u8]) -> serde_json::Result<Diagram> {
+pub(crate) fn parse(bytes: &[u8]) -> serde_json::Result<Diagram> {
     let file: File = serde_json::from_slice(bytes)?;
     let (bound_texts, elements): (Vec<Element>, Vec<Element>) = file
         .elements

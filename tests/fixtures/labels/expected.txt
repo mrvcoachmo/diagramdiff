@@ -1,4 +1,4 @@
-old.excalidraw → new.excalidraw: 1 removed, 15 added
+old.excalidraw → new.excalidraw: 1 removed, 16 added
 - rectangle "Zeta"
 + rectangle " [2KHidden"
 + rectangle "Alpha"
@@ -6,6 +6,7 @@ old.excalidraw → new.excalidraw: 1 removed, 15 added
 + ellipse "Beta"
 + rectangle "Beta"
 + rectangle "C:\\"
++ rectangle "Gateway  Queue"
 + rectangle "Legacy"
 + rectangle "Payment Gateway"
 + rectangle "Payment Service"

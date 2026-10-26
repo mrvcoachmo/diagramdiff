@@ -120,6 +120,26 @@ fn a_reader_that_stops_early_is_not_an_error() {
     assert_eq!(output.status.code(), Some(0));
 }
 
+#[cfg(target_os = "linux")]
+#[test]
+fn a_failed_write_names_stdout() {
+    // Like a full disk: /dev/full refuses every write.
+    let output = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
+        .args([
+            "tests/fixtures/redrawn/old.excalidraw",
+            "tests/fixtures/redrawn/new.excalidraw",
+        ])
+        .stdout(fs::File::create("/dev/full").unwrap())
+        .output()
+        .unwrap();
+
+    assert_eq!(
+        String::from_utf8(output.stderr).unwrap(),
+        "diagramdiff: stdout: No space left on device (os error 28)\n"
+    );
+    assert_eq!(output.status.code(), Some(2));
+}
+
 #[test]
 fn no_changes_gives_no_output() {
     let file = "tests/fixtures/redrawn/old.excalidraw";

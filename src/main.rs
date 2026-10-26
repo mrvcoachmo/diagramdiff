@@ -54,8 +54,8 @@ fn main() -> ExitCode {
 fn run(cli: &Cli) -> Result<(), String> {
     let old = read(&cli.old)?;
     let new = read(&cli.new)?;
-    let removed = only_in(&old, &new);
-    let added = only_in(&new, &old);
+    let removed = lines_only_in(&old, &new);
+    let added = lines_only_in(&new, &old);
     if removed.is_empty() && added.is_empty() {
         return Ok(());
     }
@@ -78,7 +78,7 @@ fn run(cli: &Cli) -> Result<(), String> {
         .and_then(|()| stdout.flush())
     {
         Err(err) if err.kind() == ErrorKind::BrokenPipe => Ok(()),
-        result => result.map_err(|err| err.to_string()),
+        result => result.map_err(|err| format!("stdout: {err}")),
     }
 }
 
@@ -88,7 +88,7 @@ fn read(path: &Path) -> Result<Diagram, String> {
         .map_err(|err| format!("{}: not an Excalidraw file: {err}", path.display()))
 }
 
-fn only_in(diagram: &Diagram, other: &Diagram) -> Vec<String> {
+fn lines_only_in(diagram: &Diagram, other: &Diagram) -> Vec<String> {
     let other_keys: HashSet<&str> = other
         .nodes
         .iter()
@@ -175,9 +175,12 @@ fn shown_label(label: &str) -> String {
     plain(&escaped.replace("\r\n", "\n"))
 }
 
-// Control characters become spaces: one Change per line, and no escape codes reach the terminal.
+// One Change per line, and no escape codes or reversed text reach the terminal.
 fn plain(text: &str) -> String {
-    text.chars()
-        .map(|c| if c.is_control() { ' ' } else { c })
-        .collect()
+    text.replace(|c: char| c.is_control() || sets_text_direction(c), " ")
+}
+
+/// Unicode's Bidi_Control characters.
+fn sets_text_direction(c: char) -> bool {
+    matches!(c, '\u{061C}' | '\u{200E}' | '\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}')
 }

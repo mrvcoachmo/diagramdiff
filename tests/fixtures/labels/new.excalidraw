@@ -26,6 +26,8 @@
     { "id": "t2", "type": "text", "isDeleted": false, "containerId": "k2", "text": "Legacy" },
     { "id": "kx", "type": "rectangle", "isDeleted": false },
     { "id": "tx", "type": "text", "isDeleted": false, "containerId": "kx", "text": "\u001b[2KHidden", "originalText": "\u001b[2KHidden" },
+    { "id": "ky", "type": "rectangle", "isDeleted": false },
+    { "id": "ty", "type": "text", "isDeleted": false, "containerId": "ky", "text": "Gateway\u202e\u2066Queue", "originalText": "Gateway\u202e\u2066Queue" },
     { "id": "kc", "type": "rectangle", "isDeleted": false },
     { "id": "tc", "type": "text", "isDeleted": false, "containerId": "kc", "text": "C:\\", "originalText": "C:\\" },
     { "id": "n3\nx", "type": "rectangle", "isDeleted": false }
