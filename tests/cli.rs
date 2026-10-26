@@ -96,8 +96,8 @@ fn bound_text_without_its_container_is_standalone() {
 }
 
 #[test]
-fn a_connector_download_diffs_like_any_other_file() {
-    assert_golden("connector-sample");
+fn an_mcp_download_diffs_like_any_other_file() {
+    assert_golden("mcp-sample");
 }
 
 #[test]
