@@ -1,6 +1,7 @@
 mod excalidraw;
 
 use std::{
+    cmp::Ordering,
     collections::HashSet,
     fs,
     io::{self, ErrorKind, Write},
@@ -62,53 +63,48 @@ fn run(cli: &Cli) -> Result<(), String> {
         .write_all(out.as_bytes())
         .and_then(|()| stdout.flush())
     {
-        // The reader stopped early, as `| head` or a closed pager does: nothing went wrong here.
         Err(err) if err.kind() == ErrorKind::BrokenPipe => Ok(()),
         result => result.map_err(|err| err.to_string()),
     }
 }
 
 fn read(path: &Path) -> Result<Vec<Node>, String> {
-    // Read, not just open: opening a directory succeeds on Unix, reading it fails.
-    // Bytes, not a String: a file that is not UTF-8 is still readable.
     let bytes = fs::read(path).map_err(|err| format!("{}: {err}", path.display()))?;
     excalidraw::parse(&bytes)
         .map_err(|err| format!("{}: not an Excalidraw file: {err}", path.display()))
 }
 
-/// The Nodes of `a` whose Key is not in `b`, in output order.
-fn only_in<'a>(a: &'a [Node], b: &[Node]) -> Vec<&'a Node> {
-    let keys: HashSet<&str> = b.iter().map(|node| node.key.as_str()).collect();
-    let mut nodes: Vec<&Node> = a
+fn only_in<'a>(diagram: &'a [Node], other: &[Node]) -> Vec<&'a Node> {
+    let other_keys: HashSet<&str> = other.iter().map(|node| node.key.as_str()).collect();
+    let mut nodes: Vec<&Node> = diagram
         .iter()
-        .filter(|node| !keys.contains(node.key.as_str()))
+        .filter(|node| !other_keys.contains(node.key.as_str()))
         .collect();
-    // Labelled Nodes by Label as shown, so the lines read in order; then the rest by Key alone.
-    // String order is byte order.
-    nodes.sort_by_cached_key(|&node| match &node.label {
-        Some(label) => (false, shown(label), node.kind.as_str(), node.key.as_str()),
-        None => (true, String::new(), "", node.key.as_str()),
+    nodes.sort_by(|a, b| match (&a.label, &b.label) {
+        (Some(a_label), Some(b_label)) => {
+            (shown_label(a_label), &a.kind, &a.key).cmp(&(shown_label(b_label), &b.kind, &b.key))
+        }
+        (Some(_), None) => Ordering::Less,
+        (None, Some(_)) => Ordering::Greater,
+        (None, None) => a.key.cmp(&b.key),
     });
     nodes
 }
 
 fn line(sign: char, node: &Node) -> String {
     let name = match &node.label {
-        Some(label) => format!("\"{}\"", shown(label)),
+        Some(label) => format!("\"{}\"", shown_label(label)),
         None => format!("#{}", plain(&node.key)),
     };
     format!("{sign} {} {name}\n", plain(&node.kind))
 }
 
-/// A Label as the output shows it, without its quotes.
-fn shown(label: &str) -> String {
-    // Backslash first, or the one in \" would be escaped too.
+fn shown_label(label: &str) -> String {
     let escaped = label.replace('\\', "\\\\").replace('"', "\\\"");
     plain(&escaped.replace("\r\n", "\n"))
 }
 
-/// Control characters, line breaks among them, become spaces: one Change per line,
-/// and a diagram cannot send escape codes to the reader's terminal.
+// Control characters become spaces: one Change per line, and no escape codes reach the terminal.
 fn plain(text: &str) -> String {
     text.chars()
         .map(|c| if c.is_control() { ' ' } else { c })

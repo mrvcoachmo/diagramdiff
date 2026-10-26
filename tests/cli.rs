@@ -13,8 +13,6 @@ fn diagramdiff(args: &[&str]) -> Output {
         .unwrap()
 }
 
-/// Runs `diagramdiff old.excalidraw new.excalidraw` inside `tests/fixtures/<case>`
-/// and returns the output with the case's expected.txt.
 fn golden(case: &str) -> (Output, String) {
     let dir = format!("tests/fixtures/{case}");
     let output = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
@@ -28,7 +26,6 @@ fn golden(case: &str) -> (Output, String) {
     )
 }
 
-/// A golden case that succeeds: exit 0, stdout is expected.txt, nothing on stderr.
 fn assert_golden(case: &str) {
     let (output, expected) = golden(case);
     assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
@@ -81,8 +78,7 @@ fn a_pipe_is_read_once() {
 
 #[test]
 fn a_reader_that_stops_early_is_not_an_error() {
-    // Like `diagramdiff old new | head -0`. Should diagramdiff win the race and write
-    // before the pipe closes, the pipe buffers it and the test passes all the same.
+    // Like `| head -0`. If diagramdiff writes before the close, the pipe buffers it: no flaky failure.
     let mut child = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
         .args([
             "tests/fixtures/redrawn/old.excalidraw",
