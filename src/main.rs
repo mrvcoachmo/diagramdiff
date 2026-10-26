@@ -5,6 +5,7 @@ use std::{
     collections::HashSet,
     fs,
     io::{self, ErrorKind, Write},
+    iter,
     path::{Path, PathBuf},
     process::ExitCode,
 };
@@ -41,14 +42,21 @@ struct Edge {
 }
 
 fn main() -> ExitCode {
-    let cli = Cli::parse();
+    let cli = match Cli::try_parse() {
+        Ok(cli) => cli,
+        Err(err) if !err.use_stderr() => err.exit(),
+        Err(err) => return fail(&plain_lines(err.to_string().lines())),
+    };
     match run(&cli) {
         Ok(()) => ExitCode::SUCCESS,
-        Err(err) => {
-            eprintln!("diagramdiff: {err}");
-            ExitCode::from(2)
-        }
+        Err(err) => fail(&plain_lines([format!("diagramdiff: {err}")])),
     }
+}
+
+// With stderr closed there is nowhere left to report to.
+fn fail(text: &str) -> ExitCode {
+    let _ = io::stderr().write_all(text.as_bytes());
+    ExitCode::from(2)
 }
 
 fn run(cli: &Cli) -> Result<(), String> {
@@ -59,15 +67,18 @@ fn run(cli: &Cli) -> Result<(), String> {
     if removed.is_empty() && added.is_empty() {
         return Ok(());
     }
-    let mut out = format!(
-        "{} → {}: {} removed, {} added\n",
+    let header = format!(
+        "{} → {}: {} removed, {} added",
         cli.old.display(),
         cli.new.display(),
         removed.len(),
         added.len()
     );
-    out.extend(removed.iter().map(|change| format!("- {change}\n")));
-    out.extend(added.iter().map(|change| format!("+ {change}\n")));
+    let out = plain_lines(
+        iter::once(header)
+            .chain(removed.iter().map(|change| format!("- {change}")))
+            .chain(added.iter().map(|change| format!("+ {change}"))),
+    );
     let mut stdout = io::stdout().lock();
     match stdout
         .write_all(out.as_bytes())
@@ -139,7 +150,7 @@ fn by_end(a: Option<&Node>, b: Option<&Node>) -> Ordering {
 }
 
 fn node_line(node: &Node) -> String {
-    format!("{} {}", plain(&node.kind), name(node))
+    format!("{} {}", node.kind, name(node))
 }
 
 fn edge_line(edge: &Edge) -> String {
@@ -149,7 +160,7 @@ fn edge_line(edge: &Edge) -> String {
     };
     format!(
         "{} {} → {}{label}",
-        plain(&edge.kind),
+        edge.kind,
         end(edge.from.as_ref()),
         end(edge.to.as_ref())
     )
@@ -162,7 +173,7 @@ fn end(node: Option<&Node>) -> String {
 fn name(node: &Node) -> String {
     match &node.label {
         Some(label) => format!("\"{}\"", shown_label(label)),
-        None => format!("#{}", plain(&node.key)),
+        None => format!("#{}", node.key),
     }
 }
 
@@ -171,9 +182,26 @@ fn shown_label(label: &str) -> String {
     plain(&escaped.replace("\r\n", "\n"))
 }
 
-// One Change per line, and no escape codes or reversed text reach the terminal.
+// All output leaves through here: one Change per line, no escape codes, no reversed text.
+fn plain_lines(lines: impl IntoIterator<Item = impl AsRef<str>>) -> String {
+    let mut text = String::new();
+    for line in lines {
+        text.push_str(&plain(line.as_ref()));
+        text.push('\n');
+    }
+    text
+}
+
 fn plain(text: &str) -> String {
-    text.replace(|c: char| c.is_control() || sets_text_direction(c), " ")
+    text.replace(
+        |c: char| c.is_control() || breaks_line(c) || sets_text_direction(c),
+        " ",
+    )
+}
+
+/// Unicode's line and paragraph separators.
+fn breaks_line(c: char) -> bool {
+    matches!(c, '\u{2028}' | '\u{2029}')
 }
 
 /// Unicode's `Bidi_Control` characters.

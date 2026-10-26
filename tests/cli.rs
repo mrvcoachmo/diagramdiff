@@ -201,6 +201,71 @@ fn other_json_is_not_excalidraw() {
 }
 
 #[test]
+fn an_error_cannot_send_escape_codes() {
+    let (output, expected) = golden("escape-codes");
+
+    assert_eq!(String::from_utf8(output.stdout).unwrap(), "");
+    assert_eq!(String::from_utf8(output.stderr).unwrap(), expected);
+    assert_eq!(output.status.code(), Some(2));
+}
+
+#[test]
+fn a_closed_stderr_still_exits_2() {
+    // Like `2>&1 | head -0`. If diagramdiff writes before the close, the pipe buffers it: no flaky failure.
+    let mut child = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
+        .args(["Cargo.toml", "Cargo.toml"])
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    drop(child.stderr.take());
+
+    assert_eq!(child.wait().unwrap().code(), Some(2));
+}
+
+#[test]
+fn an_argument_cannot_send_escape_codes() {
+    let output = diagramdiff(&["a", "b", "c\u{1b}[31md\u{202e}\rX"]);
+
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(!stderr.contains(['\u{1b}', '\u{202e}', '\r']), "{stderr:?}");
+    assert!(
+        stderr.starts_with("error: unexpected argument 'cd  X' found\n"),
+        "{stderr}"
+    );
+    assert!(
+        stderr.contains("Usage: diagramdiff <OLD> <NEW>\n"),
+        "{stderr}"
+    );
+    assert_eq!(output.status.code(), Some(2));
+}
+
+#[cfg(unix)]
+#[test]
+fn a_path_cannot_send_escape_codes() {
+    let dir = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("escape-codes");
+    fs::create_dir_all(&dir).unwrap();
+    let old = "a\u{1b}[31mb\u{202e}.excalidraw";
+    let new = "c\u{1b}[2Kd\ne\u{2028}f\u{2029}g.excalidraw";
+    fs::copy("tests/fixtures/redrawn/old.excalidraw", dir.join(old)).unwrap();
+    fs::copy("tests/fixtures/redrawn/new.excalidraw", dir.join(new)).unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
+        .args([old, new])
+        .current_dir(&dir)
+        .output()
+        .unwrap();
+
+    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+    assert_eq!(
+        String::from_utf8(output.stdout).unwrap(),
+        "a [31mb .excalidraw → c [2Kd e f g.excalidraw: 1 removed, 1 added\n\
+         - rectangle \"API\"\n\
+         + rectangle \"API\"\n"
+    );
+    assert_eq!(output.status.code(), Some(0));
+}
+
+#[test]
 fn a_file_that_is_not_json_is_not_excalidraw() {
     let output = diagramdiff(&["Cargo.toml", "tests/cli.rs"]);
 

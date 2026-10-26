@@ -1,0 +1,1 @@
+diagramdiff: new.excalidraw: not an Excalidraw file: unknown variant ` [31mRED `, expected `excalidraw` at line 2 column 28
