@@ -3,6 +3,7 @@
 use std::{
     fs,
     io::Write,
+    path::Path,
     process::{Command, Output, Stdio},
 };
 
@@ -118,7 +119,7 @@ fn on_a_duplicate_id_the_first_is_kept_with_a_warning() {
 
 #[test]
 fn a_warning_cannot_send_escape_codes() {
-    let dir = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("warning-escape-codes");
+    let dir = Path::new(env!("CARGO_TARGET_TMPDIR")).join("warning-escape-codes");
     fs::create_dir_all(&dir).unwrap();
     fs::write(
         dir.join("a.excalidraw"),
@@ -319,10 +320,15 @@ fn the_readme_shows_the_real_help() {
 
 /// The shell loop of a README CI job, from `git diff` to `done`.
 fn ci_loop(job: &str) -> String {
-    let start = job.find("git diff").unwrap();
-    let end = start + job[start..].find("done").unwrap();
-    let lines: Vec<&str> = job[start..end].lines().map(str::trim_start).collect();
-    format!("{}\ndone", lines.join("\n"))
+    let start = job
+        .find("git diff")
+        .expect("a README CI job has a git diff loop");
+    let done = start + job[start..].find("done").expect("the loop ends with done");
+    job[start..done + "done".len()]
+        .lines()
+        .map(str::trim_start)
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 #[cfg(unix)]
@@ -330,18 +336,25 @@ fn ci_loop(job: &str) -> String {
 fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
     let readme = fs::read_to_string("README.md").unwrap();
     let jobs: Vec<String> = readme.split("```yaml").skip(1).map(ci_loop).collect();
-    assert_eq!(jobs.len(), 2);
+    assert_eq!(
+        jobs.len(),
+        2,
+        "the README has one GitHub and one GitLab job"
+    );
     assert_eq!(jobs[0], jobs[1]);
 
-    let dir = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("ci-loop");
+    let dir = Path::new(env!("CARGO_TARGET_TMPDIR")).join("ci-loop");
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(dir.join("docs")).unwrap();
+    let no_user_git_config = [
+        ("GIT_CONFIG_GLOBAL", "/dev/null"),
+        ("GIT_CONFIG_NOSYSTEM", "1"),
+    ];
     let git = |args: &[&str]| {
         let status = Command::new("git")
             .args(["-c", "user.name=test", "-c", "user.email=test@example.com"])
             .args(args)
-            .env("GIT_CONFIG_GLOBAL", "/dev/null")
-            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .envs(no_user_git_config)
             .current_dir(&dir)
             .status()
             .unwrap();
@@ -363,7 +376,7 @@ fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
     git(&["add", "-A"]);
     git(&["commit", "-qm", "pull request"]);
 
-    let bin = std::path::Path::new(env!("CARGO_BIN_EXE_diagramdiff"));
+    let bin = Path::new(env!("CARGO_BIN_EXE_diagramdiff"));
     let path = format!(
         "{}:{}",
         bin.parent().unwrap().display(),
@@ -373,8 +386,7 @@ fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
         .args(["-eo", "pipefail", "-c", &jobs[0]])
         .env("BASE", "HEAD^1")
         .env("PATH", path)
-        .env("GIT_CONFIG_GLOBAL", "/dev/null")
-        .env("GIT_CONFIG_NOSYSTEM", "1")
+        .envs(no_user_git_config)
         .current_dir(&dir)
         .output()
         .unwrap();
@@ -464,7 +476,7 @@ fn an_argument_cannot_send_escape_codes() {
 #[cfg(unix)]
 #[test]
 fn a_path_cannot_send_escape_codes() {
-    let dir = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("escape-codes");
+    let dir = Path::new(env!("CARGO_TARGET_TMPDIR")).join("escape-codes");
     fs::create_dir_all(&dir).unwrap();
     let old = "a\u{1b}[31mb\u{202e}.excalidraw";
     let new = "c\u{1b}[2Kd\ne\u{2028}f\u{2029}g.excalidraw";
