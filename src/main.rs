@@ -19,6 +19,9 @@ struct Cli {
     old: PathBuf,
     /// The new diagram
     new: PathBuf,
+    /// Exit with 1 if there are Changes and 0 if not, like git diff --exit-code
+    #[arg(long)]
+    exit_code: bool,
 }
 
 struct Diagram {
@@ -47,8 +50,10 @@ fn main() -> ExitCode {
         Err(err) if !err.use_stderr() => err.exit(),
         Err(err) => return fail(&plain_lines(err.to_string().lines())),
     };
+    // Changes exit 0 by default: git stops at a diff driver's non-zero exit (decision-1).
     match run(&cli) {
-        Ok(()) => ExitCode::SUCCESS,
+        Ok(true) if cli.exit_code => ExitCode::from(1),
+        Ok(_) => ExitCode::SUCCESS,
         Err(err) => fail(&plain_lines([format!("diagramdiff: {err}")])),
     }
 }
@@ -59,13 +64,14 @@ fn fail(text: &str) -> ExitCode {
     ExitCode::from(2)
 }
 
-fn run(cli: &Cli) -> Result<(), String> {
+/// Prints the Changes and tells whether there are any.
+fn run(cli: &Cli) -> Result<bool, String> {
     let old = read(&cli.old)?;
     let new = read(&cli.new)?;
     let removed = lines_only_in(&old, &new);
     let added = lines_only_in(&new, &old);
     if removed.is_empty() && added.is_empty() {
-        return Ok(());
+        return Ok(false);
     }
     let header = format!(
         "{} → {}: {} removed, {} added",
@@ -80,13 +86,14 @@ fn run(cli: &Cli) -> Result<(), String> {
             .chain(added.iter().map(|change| format!("+ {change}"))),
     );
     let mut stdout = io::stdout().lock();
-    match stdout
+    if let Err(err) = stdout
         .write_all(out.as_bytes())
         .and_then(|()| stdout.flush())
+        && err.kind() != ErrorKind::BrokenPipe
     {
-        Err(err) if err.kind() == ErrorKind::BrokenPipe => Ok(()),
-        result => result.map_err(|err| format!("stdout: {err}")),
+        return Err(format!("stdout: {err}"));
     }
+    Ok(true)
 }
 
 fn read(path: &Path) -> Result<Diagram, String> {

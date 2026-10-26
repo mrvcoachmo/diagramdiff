@@ -15,9 +15,10 @@ fn diagramdiff(args: &[&str]) -> Output {
         .unwrap()
 }
 
-fn golden(case: &str) -> (Output, String) {
+fn golden(case: &str, flags: &[&str]) -> (Output, String) {
     let dir = format!("tests/fixtures/{case}");
     let output = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
+        .args(flags)
         .args(["old.excalidraw", "new.excalidraw"])
         .current_dir(&dir)
         .output()
@@ -29,7 +30,7 @@ fn golden(case: &str) -> (Output, String) {
 }
 
 fn assert_golden(case: &str) {
-    let (output, expected) = golden(case);
+    let (output, expected) = golden(case, &[]);
     assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
     assert_eq!(String::from_utf8(output.stdout).unwrap(), expected);
     assert_eq!(output.status.code(), Some(0));
@@ -106,20 +107,23 @@ fn a_pipe_is_read_once() {
 #[test]
 fn a_reader_that_stops_early_is_not_an_error() {
     // Like `| head -0`. If diagramdiff writes before the close, the pipe buffers it: no flaky failure.
-    let mut child = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
-        .args([
-            "tests/fixtures/redrawn/old.excalidraw",
-            "tests/fixtures/redrawn/new.excalidraw",
-        ])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .unwrap();
-    drop(child.stdout.take());
-    let output = child.wait_with_output().unwrap();
+    for (flags, code) in [(&[][..], 0), (&["--exit-code"][..], 1)] {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
+            .args(flags)
+            .args([
+                "tests/fixtures/redrawn/old.excalidraw",
+                "tests/fixtures/redrawn/new.excalidraw",
+            ])
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        drop(child.stdout.take());
+        let output = child.wait_with_output().unwrap();
 
-    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
-    assert_eq!(output.status.code(), Some(0));
+        assert_eq!(String::from_utf8(output.stderr).unwrap(), "", "{flags:?}");
+        assert_eq!(output.status.code(), Some(code), "{flags:?}");
+    }
 }
 
 #[cfg(target_os = "linux")]
@@ -153,6 +157,41 @@ fn no_changes_gives_no_output() {
 }
 
 #[test]
+fn exit_code_is_1_for_changes() {
+    let (output, expected) = golden("redrawn", &["--exit-code"]);
+
+    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+    assert_eq!(String::from_utf8(output.stdout).unwrap(), expected);
+    assert_eq!(output.status.code(), Some(1));
+}
+
+#[test]
+fn exit_code_is_0_for_no_changes() {
+    let file = "tests/fixtures/redrawn/old.excalidraw";
+    let output = diagramdiff(&["--exit-code", file, file]);
+
+    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+    assert_eq!(String::from_utf8(output.stdout).unwrap(), "");
+    assert_eq!(output.status.code(), Some(0));
+}
+
+#[test]
+fn errors_exit_2_with_or_without_exit_code() {
+    let errors: [&[&str]; 3] = [
+        &["missing.excalidraw", "Cargo.toml"],
+        &["Cargo.toml", "Cargo.toml"],
+        &["a", "b", "c"],
+    ];
+    for flags in [&[][..], &["--exit-code"]] {
+        for args in errors {
+            let output = diagramdiff(&[flags, args].concat());
+
+            assert_eq!(output.status.code(), Some(2), "{flags:?} {args:?}");
+        }
+    }
+}
+
+#[test]
 fn version_and_help() {
     let version = diagramdiff(&["--version"]);
     assert_eq!(version.status.code(), Some(0));
@@ -166,7 +205,7 @@ fn version_and_help() {
     assert!(
         String::from_utf8(help.stdout)
             .unwrap()
-            .contains("Usage: diagramdiff <OLD> <NEW>")
+            .contains("Usage: diagramdiff [OPTIONS] <OLD> <NEW>")
     );
 }
 
@@ -193,7 +232,7 @@ fn unreadable_new_file_is_an_error() {
 
 #[test]
 fn other_json_is_not_excalidraw() {
-    let (output, expected) = golden("not-excalidraw");
+    let (output, expected) = golden("not-excalidraw", &[]);
 
     assert_eq!(String::from_utf8(output.stdout).unwrap(), "");
     assert_eq!(String::from_utf8(output.stderr).unwrap(), expected);
@@ -202,7 +241,7 @@ fn other_json_is_not_excalidraw() {
 
 #[test]
 fn an_error_cannot_send_escape_codes() {
-    let (output, expected) = golden("escape-codes");
+    let (output, expected) = golden("escape-codes", &[]);
 
     assert_eq!(String::from_utf8(output.stdout).unwrap(), "");
     assert_eq!(String::from_utf8(output.stderr).unwrap(), expected);
@@ -233,7 +272,7 @@ fn an_argument_cannot_send_escape_codes() {
         "{stderr}"
     );
     assert!(
-        stderr.contains("Usage: diagramdiff <OLD> <NEW>\n"),
+        stderr.contains("Usage: diagramdiff [OPTIONS] <OLD> <NEW>\n"),
         "{stderr}"
     );
     assert_eq!(output.status.code(), Some(2));
