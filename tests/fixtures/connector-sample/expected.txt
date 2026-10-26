@@ -1,0 +1,4 @@
+old.excalidraw → new.excalidraw: 1 removed, 2 added
+- ellipse #sun
++ rectangle "Database"
++ arrow "World" → "Database"

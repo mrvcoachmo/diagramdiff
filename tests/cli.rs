@@ -96,6 +96,11 @@ fn bound_text_without_its_container_is_standalone() {
 }
 
 #[test]
+fn a_connector_download_diffs_like_any_other_file() {
+    assert_golden("connector-sample");
+}
+
+#[test]
 fn an_element_without_id_is_skipped_with_a_warning() {
     assert_golden_with_warnings(
         "no-id",
