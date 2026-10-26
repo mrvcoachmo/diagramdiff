@@ -294,6 +294,104 @@ fn version_and_help() {
     );
 }
 
+fn assert_readme_shows(command: &str, output: Output) {
+    let example = format!(
+        "$ {command}\n{}```",
+        String::from_utf8(output.stdout).unwrap()
+    );
+
+    assert!(
+        fs::read_to_string("README.md").unwrap().contains(&example),
+        "{example}"
+    );
+}
+
+#[test]
+fn the_readme_shows_real_output() {
+    let (output, _) = golden("sample", &[]);
+    assert_readme_shows("diagramdiff old.excalidraw new.excalidraw", output);
+}
+
+#[test]
+fn the_readme_shows_the_real_help() {
+    assert_readme_shows("diagramdiff --help", diagramdiff(&["--help"]));
+}
+
+/// The shell loop of a README CI job, from `git diff` to `done`.
+fn ci_loop(job: &str) -> String {
+    let start = job.find("git diff").unwrap();
+    let end = start + job[start..].find("done").unwrap();
+    let lines: Vec<&str> = job[start..end].lines().map(str::trim_start).collect();
+    format!("{}\ndone", lines.join("\n"))
+}
+
+#[cfg(unix)]
+#[test]
+fn the_readme_ci_jobs_diff_the_diagrams_changed_in_place() {
+    let readme = fs::read_to_string("README.md").unwrap();
+    let jobs: Vec<String> = readme.split("```yaml").skip(1).map(ci_loop).collect();
+    assert_eq!(jobs.len(), 2);
+    assert_eq!(jobs[0], jobs[1]);
+
+    let dir = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("ci-loop");
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(dir.join("docs")).unwrap();
+    let git = |args: &[&str]| {
+        let status = Command::new("git")
+            .args(["-c", "user.name=test", "-c", "user.email=test@example.com"])
+            .args(args)
+            .env("GIT_CONFIG_GLOBAL", "/dev/null")
+            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .current_dir(&dir)
+            .status()
+            .unwrap();
+        assert!(status.success(), "git {args:?}");
+    };
+    let fixture = |case: &str, file: &str, to: &str| {
+        fs::copy(format!("tests/fixtures/{case}/{file}"), dir.join(to)).unwrap();
+    };
+    git(&["init", "-q"]);
+    fixture("redrawn", "old.excalidraw", "docs/architecture.excalidraw");
+    fixture("redrawn", "old.excalidraw", "-lead.excalidraw");
+    fixture("sample", "old.excalidraw", "deleted.excalidraw");
+    git(&["add", "-A"]);
+    git(&["commit", "-qm", "base"]);
+    fixture("redrawn", "new.excalidraw", "docs/architecture.excalidraw");
+    fixture("redrawn", "new.excalidraw", "-lead.excalidraw");
+    fixture("sample", "new.excalidraw", "added.excalidraw");
+    fs::remove_file(dir.join("deleted.excalidraw")).unwrap();
+    git(&["add", "-A"]);
+    git(&["commit", "-qm", "pull request"]);
+
+    let bin = std::path::Path::new(env!("CARGO_BIN_EXE_diagramdiff"));
+    let path = format!(
+        "{}:{}",
+        bin.parent().unwrap().display(),
+        std::env::var("PATH").unwrap()
+    );
+    let output = Command::new("bash")
+        .args(["-eo", "pipefail", "-c", &jobs[0]])
+        .env("BASE", "HEAD^1")
+        .env("PATH", path)
+        .env("GIT_CONFIG_GLOBAL", "/dev/null")
+        .env("GIT_CONFIG_NOSYSTEM", "1")
+        .current_dir(&dir)
+        .output()
+        .unwrap();
+
+    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+    assert_eq!(
+        String::from_utf8(output.stdout).unwrap(),
+        "-lead.excalidraw.old → -lead.excalidraw: 1 removed, 1 added\n\
+         - rectangle \"API\"\n\
+         + rectangle \"API\"\n\
+         docs/architecture.excalidraw.old → docs/architecture.excalidraw: 1 removed, 1 added\n\
+         - rectangle \"API\"\n\
+         + rectangle \"API\"\n"
+    );
+    assert_eq!(output.status.code(), Some(0));
+}
+
 #[test]
 fn missing_file_is_an_error() {
     let output = diagramdiff(&["missing.excalidraw", "Cargo.toml"]);
