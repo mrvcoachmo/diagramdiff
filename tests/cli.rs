@@ -30,8 +30,12 @@ fn golden(case: &str, flags: &[&str]) -> (Output, String) {
 }
 
 fn assert_golden(case: &str) {
+    assert_golden_with_warnings(case, "");
+}
+
+fn assert_golden_with_warnings(case: &str, warnings: &str) {
     let (output, expected) = golden(case, &[]);
-    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+    assert_eq!(String::from_utf8(output.stderr).unwrap(), warnings);
     assert_eq!(String::from_utf8(output.stdout).unwrap(), expected);
     assert_eq!(output.status.code(), Some(0));
 }
@@ -74,6 +78,80 @@ fn nodes_show_and_sort_by_their_label() {
 #[test]
 fn tombstones_are_left_out() {
     assert_golden("tombstones");
+}
+
+#[test]
+fn other_kinds_show_their_kind_and_label() {
+    assert_golden("other-kinds");
+}
+
+#[test]
+fn text_and_unknown_kinds_show_as_written() {
+    assert_golden("kinds");
+}
+
+#[test]
+fn bound_text_without_its_container_is_standalone() {
+    assert_golden("missing-container");
+}
+
+#[test]
+fn an_element_without_id_is_skipped_with_a_warning() {
+    assert_golden_with_warnings(
+        "no-id",
+        "diagramdiff: new.excalidraw: elements[1] skipped: no id\n",
+    );
+}
+
+#[test]
+fn on_a_duplicate_id_the_first_is_kept_with_a_warning() {
+    assert_golden_with_warnings(
+        "duplicate-id",
+        "diagramdiff: new.excalidraw: elements[3] skipped: id #api is used by elements[1]\n",
+    );
+}
+
+#[test]
+fn a_warning_cannot_send_escape_codes() {
+    let dir = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("warning-escape-codes");
+    fs::create_dir_all(&dir).unwrap();
+    fs::write(
+        dir.join("a.excalidraw"),
+        r#"{"type": "excalidraw", "elements": [
+            {"id": "x\u001b[2K\u202ey", "type": "text"},
+            {"id": "x\u001b[2K\u202ey", "type": "text"}
+        ]}"#,
+    )
+    .unwrap();
+
+    fs::write(
+        dir.join("b.excalidraw"),
+        r#"{"type": "excalidraw", "elements": [{"type": "text"}]}"#,
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
+        .args(["a.excalidraw", "b.excalidraw"])
+        .current_dir(&dir)
+        .output()
+        .unwrap();
+
+    assert_eq!(
+        String::from_utf8(output.stderr).unwrap(),
+        "diagramdiff: a.excalidraw: elements[1] skipped: id #x [2K y is used by elements[0]\n\
+         diagramdiff: b.excalidraw: elements[0] skipped: no id\n"
+    );
+    assert_eq!(
+        String::from_utf8(output.stdout).unwrap(),
+        "a.excalidraw → b.excalidraw: 1 removed, 0 added\n\
+         - text #x [2K y\n"
+    );
+    assert_eq!(output.status.code(), Some(0));
+}
+
+#[test]
+fn layout_is_not_a_change() {
+    assert_golden("layout-only");
 }
 
 #[test]

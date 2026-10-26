@@ -1,0 +1,6 @@
+old.excalidraw → new.excalidraw: 0 removed, 5 added
++ text "Authorization"
++ text "Old file"
++ frame #blank
++ hexagon #hex
++ frame #untitled

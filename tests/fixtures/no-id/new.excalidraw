@@ -1,0 +1,8 @@
+{
+  "type": "excalidraw",
+  "elements": [
+    { "id": "db-box", "type": "rectangle" },
+    { "type": "rectangle" },
+    { "id": "cache-box", "type": "ellipse" }
+  ]
+}

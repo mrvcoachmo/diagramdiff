@@ -58,10 +58,14 @@ fn main() -> ExitCode {
     }
 }
 
-// With stderr closed there is nowhere left to report to.
 fn fail(text: &str) -> ExitCode {
-    let _ = io::stderr().write_all(text.as_bytes());
+    report(text);
     ExitCode::from(2)
+}
+
+// With stderr closed there is nowhere left to report to.
+fn report(text: &str) {
+    let _ = io::stderr().write_all(text.as_bytes());
 }
 
 /// Prints the Changes and tells whether there are any.
@@ -98,8 +102,12 @@ fn run(cli: &Cli) -> Result<bool, String> {
 
 fn read(path: &Path) -> Result<Diagram, String> {
     let bytes = fs::read(path).map_err(|err| format!("{}: {err}", path.display()))?;
-    excalidraw::parse(&bytes)
-        .map_err(|err| format!("{}: not an Excalidraw file: {err}", path.display()))
+    let (diagram, warnings) = excalidraw::parse(&bytes)
+        .map_err(|err| format!("{}: not an Excalidraw file: {err}", path.display()))?;
+    report(&plain_lines(warnings.iter().map(|warning| {
+        format!("diagramdiff: {}: {warning}", path.display())
+    })));
+    Ok(diagram)
 }
 
 fn lines_only_in(diagram: &Diagram, other: &Diagram) -> Vec<String> {

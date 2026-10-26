@@ -1,0 +1,10 @@
+{
+  "type": "excalidraw",
+  "elements": [
+    { "id": "wrapped", "type": "text", "text": "Authoriz\nation", "originalText": "Authorization" },
+    { "id": "legacy", "type": "text", "text": "Old file" },
+    { "id": "untitled", "type": "frame", "name": null },
+    { "id": "blank", "type": "frame", "name": "" },
+    { "id": "hex", "type": "hexagon", "sides": 6 }
+  ]
+}

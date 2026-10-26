@@ -1,0 +1,10 @@
+{
+  "type": "excalidraw",
+  "elements": [
+    { "id": "api", "type": "rectangle", "isDeleted": true },
+    { "id": "api", "type": "rectangle" },
+    { "id": "api-label", "type": "text", "containerId": "api", "originalText": "API" },
+    { "id": "api", "type": "text", "originalText": "Copy" },
+    { "id": "call", "type": "arrow", "endBinding": { "elementId": "api" } }
+  ]
+}

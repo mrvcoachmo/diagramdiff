@@ -1,0 +1,8 @@
+{
+  "type": "excalidraw",
+  "elements": [
+    { "id": "note", "type": "text", "containerId": "no-such-box", "originalText": "Orphan" },
+    { "id": "old-box", "type": "rectangle", "isDeleted": true },
+    { "id": "old-label", "type": "text", "containerId": "old-box", "originalText": "Left behind" }
+  ]
+}
