@@ -51,7 +51,7 @@ The first line names the two files and counts the changes. Each line after it is
 - `#Aim8XXiCRUQBdeFuAj1Av` has no label, so it shows its key, the Excalidraw element id.
 - `(unconnected)` is an arrow end that isn't attached to anything.
 
-diagramdiff matches by key only. A box you delete and draw again gets a new key, so it shows as removed and added, even with the same label.
+diagramdiff matches by key only. A box you delete and draw again gets a new key, so it shows as removed and added, even with the same label. When a tool rebuilds the file with new keys, everything shows as removed and added.
 
 This version shows only what was added and removed. A box you relabel, or an arrow you move to another box, keeps its key and shows nothing yet. Moving, resizing and restyling print nothing either. When nothing was added or removed, diagramdiff prints nothing.
 
