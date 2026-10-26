@@ -185,7 +185,8 @@ fn a_pipe_is_read_once() {
 #[test]
 fn a_reader_that_stops_early_is_not_an_error() {
     // Like `| head -0`. If diagramdiff writes before the close, the pipe buffers it: no flaky failure.
-    for (flags, code) in [(&[][..], 0), (&["--exit-code"][..], 1)] {
+    let cases: [(&[&str], i32); 2] = [(&[], 0), (&["--exit-code"], 1)];
+    for (flags, code) in cases {
         let mut child = Command::new(env!("CARGO_BIN_EXE_diagramdiff"))
             .args(flags)
             .args([
@@ -260,7 +261,8 @@ fn errors_exit_2_with_or_without_exit_code() {
         &["Cargo.toml", "Cargo.toml"],
         &["a", "b", "c"],
     ];
-    for flags in [&[][..], &["--exit-code"]] {
+    let flag_states: [&[&str]; 2] = [&[], &["--exit-code"]];
+    for flags in flag_states {
         for args in errors {
             let output = diagramdiff(&[flags, args].concat());
 
