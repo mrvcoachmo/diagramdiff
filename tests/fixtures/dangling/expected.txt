@@ -1,0 +1,7 @@
+old.excalidraw → new.excalidraw: 0 removed, 6 added
++ arrow "Store" → (unconnected) : "arrow"
++ arrow "Store" → (unconnected) : "bound text"
++ arrow "Store" → (unconnected) : "missing id"
++ arrow (unconnected) → "Store" : "tombstone"
++ arrow (unconnected) → (unconnected) : "no binding"
++ arrow (unconnected) → (unconnected) : "no element id"

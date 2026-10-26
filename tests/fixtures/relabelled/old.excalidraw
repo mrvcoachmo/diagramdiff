@@ -1,0 +1,14 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "client-box", "type": "rectangle", "isDeleted": false },
+    { "id": "client-text", "type": "text", "isDeleted": false, "containerId": "client-box", "text": "Client", "originalText": "Client" },
+    { "id": "billing-box", "type": "rectangle", "isDeleted": false },
+    { "id": "billing-text", "type": "text", "isDeleted": false, "containerId": "billing-box", "text": "Billing", "originalText": "Billing" },
+    { "id": "legacy-box", "type": "rectangle", "isDeleted": false },
+    { "id": "legacy-text", "type": "text", "isDeleted": false, "containerId": "legacy-box", "text": "Legacy", "originalText": "Legacy" },
+    { "id": "client-call", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "client-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "billing-box", "focus": 0, "gap": 1 } },
+    { "id": "legacy-call", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "legacy-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "billing-box", "focus": 0, "gap": 1 } }
+  ]
+}

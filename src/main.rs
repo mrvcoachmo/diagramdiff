@@ -20,10 +20,24 @@ struct Cli {
     new: PathBuf,
 }
 
+struct Diagram {
+    nodes: Vec<Node>,
+    edges: Vec<Edge>,
+}
+
+#[derive(Clone)]
 struct Node {
     key: String,
     kind: String,
     label: Option<String>,
+}
+
+struct Edge {
+    key: String,
+    kind: String,
+    label: Option<String>,
+    from: Option<Node>,
+    to: Option<Node>,
 }
 
 fn main() -> ExitCode {
@@ -52,11 +66,11 @@ fn run(cli: &Cli) -> Result<(), String> {
         removed.len(),
         added.len()
     );
-    for node in removed {
-        out += &line('-', node);
+    for change in removed {
+        out += &format!("- {change}\n");
     }
-    for node in added {
-        out += &line('+', node);
+    for change in added {
+        out += &format!("+ {change}\n");
     }
     let mut stdout = io::stdout().lock();
     match stdout
@@ -68,35 +82,92 @@ fn run(cli: &Cli) -> Result<(), String> {
     }
 }
 
-fn read(path: &Path) -> Result<Vec<Node>, String> {
+fn read(path: &Path) -> Result<Diagram, String> {
     let bytes = fs::read(path).map_err(|err| format!("{}: {err}", path.display()))?;
     excalidraw::parse(&bytes)
         .map_err(|err| format!("{}: not an Excalidraw file: {err}", path.display()))
 }
 
-fn only_in<'a>(diagram: &'a [Node], other: &[Node]) -> Vec<&'a Node> {
-    let other_keys: HashSet<&str> = other.iter().map(|node| node.key.as_str()).collect();
+fn only_in(diagram: &Diagram, other: &Diagram) -> Vec<String> {
+    let other_keys: HashSet<&str> = other
+        .nodes
+        .iter()
+        .map(|node| node.key.as_str())
+        .chain(other.edges.iter().map(|edge| edge.key.as_str()))
+        .collect();
     let mut nodes: Vec<&Node> = diagram
+        .nodes
         .iter()
         .filter(|node| !other_keys.contains(node.key.as_str()))
         .collect();
-    nodes.sort_by(|a, b| match (&a.label, &b.label) {
-        (Some(a_label), Some(b_label)) => {
-            (shown_label(a_label), &a.kind, &a.key).cmp(&(shown_label(b_label), &b.kind, &b.key))
-        }
+    nodes.sort_by(|a, b| by_name(a, b).then_with(|| (&a.kind, &a.key).cmp(&(&b.kind, &b.key))));
+    let mut edges: Vec<&Edge> = diagram
+        .edges
+        .iter()
+        .filter(|edge| !other_keys.contains(edge.key.as_str()))
+        .collect();
+    edges.sort_by(|a, b| {
+        by_end(a.from.as_ref(), b.from.as_ref())
+            .then_with(|| by_end(a.to.as_ref(), b.to.as_ref()))
+            .then_with(|| {
+                a.label
+                    .as_deref()
+                    .map(shown_label)
+                    .cmp(&b.label.as_deref().map(shown_label))
+            })
+            .then_with(|| a.key.cmp(&b.key))
+    });
+    nodes
+        .into_iter()
+        .map(node_line)
+        .chain(edges.into_iter().map(edge_line))
+        .collect()
+}
+
+fn by_name(a: &Node, b: &Node) -> Ordering {
+    match (&a.label, &b.label) {
+        (Some(a_label), Some(b_label)) => shown_label(a_label).cmp(&shown_label(b_label)),
         (Some(_), None) => Ordering::Less,
         (None, Some(_)) => Ordering::Greater,
         (None, None) => a.key.cmp(&b.key),
-    });
-    nodes
+    }
 }
 
-fn line(sign: char, node: &Node) -> String {
-    let name = match &node.label {
+fn by_end(a: Option<&Node>, b: Option<&Node>) -> Ordering {
+    match (a, b) {
+        (Some(a), Some(b)) => by_name(a, b),
+        (Some(_), None) => Ordering::Less,
+        (None, Some(_)) => Ordering::Greater,
+        (None, None) => Ordering::Equal,
+    }
+}
+
+fn node_line(node: &Node) -> String {
+    format!("{} {}", plain(&node.kind), name(node))
+}
+
+fn edge_line(edge: &Edge) -> String {
+    let label = match &edge.label {
+        Some(label) => format!(" : \"{}\"", shown_label(label)),
+        None => String::new(),
+    };
+    format!(
+        "{} {} → {}{label}",
+        plain(&edge.kind),
+        end(edge.from.as_ref()),
+        end(edge.to.as_ref())
+    )
+}
+
+fn end(node: Option<&Node>) -> String {
+    node.map_or("(unconnected)".to_string(), name)
+}
+
+fn name(node: &Node) -> String {
+    match &node.label {
         Some(label) => format!("\"{}\"", shown_label(label)),
         None => format!("#{}", plain(&node.key)),
-    };
-    format!("{sign} {} {name}\n", plain(&node.kind))
+    }
 }
 
 fn shown_label(label: &str) -> String {

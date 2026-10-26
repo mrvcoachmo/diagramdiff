@@ -34,6 +34,31 @@ fn assert_golden(case: &str) {
 }
 
 #[test]
+fn edges_show_from_to_and_label() {
+    assert_golden("sample");
+}
+
+#[test]
+fn old_bindings_give_the_same_edges() {
+    assert_golden("old-bindings");
+}
+
+#[test]
+fn an_end_not_bound_to_a_node_is_unconnected() {
+    assert_golden("dangling");
+}
+
+#[test]
+fn ends_are_named_from_the_diagram_of_their_edge() {
+    assert_golden("relabelled");
+}
+
+#[test]
+fn edges_sort_by_from_to_and_label_after_nodes() {
+    assert_golden("edge-order");
+}
+
+#[test]
 fn redrawn_box_is_removed_and_added() {
     assert_golden("redrawn");
 }

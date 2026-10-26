@@ -1,0 +1,8 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "store-box", "type": "rectangle", "isDeleted": false },
+    { "id": "store-text", "type": "text", "isDeleted": false, "containerId": "store-box", "text": "Store", "originalText": "Store" }
+  ]
+}

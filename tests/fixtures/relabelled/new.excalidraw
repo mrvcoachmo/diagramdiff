@@ -1,0 +1,14 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "client-box", "type": "rectangle", "isDeleted": false },
+    { "id": "client-text", "type": "text", "isDeleted": false, "containerId": "client-box", "text": "Client", "originalText": "Client" },
+    { "id": "billing-box", "type": "rectangle", "isDeleted": false },
+    { "id": "billing-text", "type": "text", "isDeleted": false, "containerId": "billing-box", "text": "Invoicing", "originalText": "Invoicing" },
+    { "id": "audit-box", "type": "rectangle", "isDeleted": false },
+    { "id": "audit-text", "type": "text", "isDeleted": false, "containerId": "audit-box", "text": "Audit", "originalText": "Audit" },
+    { "id": "client-call-2", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "client-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "billing-box", "focus": 0, "gap": 1 } },
+    { "id": "audit-call", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "billing-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "audit-box", "focus": 0, "gap": 1 } }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "alpha-box", "type": "rectangle", "isDeleted": false },
+    { "id": "alpha-box-text", "type": "text", "isDeleted": false, "containerId": "alpha-box", "text": "Alpha", "originalText": "Alpha" },
+    { "id": "beta-box", "type": "rectangle", "isDeleted": false },
+    { "id": "beta-box-text", "type": "text", "isDeleted": false, "containerId": "beta-box", "text": "Beta", "originalText": "Beta" },
+    { "id": "pay-box", "type": "rectangle", "isDeleted": false },
+    { "id": "pay-box-text", "type": "text", "isDeleted": false, "containerId": "pay-box", "text": "Pay", "originalText": "Pay" },
+    { "id": "gateway-box", "type": "rectangle", "isDeleted": false },
+    { "id": "gateway-box-text", "type": "text", "isDeleted": false, "containerId": "gateway-box", "text": "Pay Gateway", "originalText": "Pay Gateway" },
+    { "id": "lower-box", "type": "rectangle", "isDeleted": false },
+    { "id": "lower-box-text", "type": "text", "isDeleted": false, "containerId": "lower-box", "text": "alpha", "originalText": "alpha" },
+    { "id": "k1", "type": "rectangle", "isDeleted": false },
+    { "id": "k2", "type": "rectangle", "isDeleted": false },
+    { "id": "e1", "type": "arrow", "isDeleted": false, "startBinding": null, "endBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1} },
+    { "id": "e2", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "k2", "focus": 0, "gap": 1}, "endBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1} },
+    { "id": "e3", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "k1", "focus": 0, "gap": 1}, "endBinding": {"elementId": "beta-box", "focus": 0, "gap": 1} },
+    { "id": "e4", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "lower-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1} },
+    { "id": "e5", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "gateway-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1} },
+    { "id": "e10", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "beta-box", "focus": 0, "gap": 1} },
+    { "id": "e10-text", "type": "text", "isDeleted": false, "containerId": "e10", "text": "sync", "originalText": "sync" },
+    { "id": "e6", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "pay-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1} },
+    { "id": "e7", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1}, "endBinding": null },
+    { "id": "e11", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "beta-box", "focus": 0, "gap": 1} },
+    { "id": "e11-text", "type": "text", "isDeleted": false, "containerId": "e11", "text": "Say \"hi\"\nnow", "originalText": "Say \"hi\"\nnow" },
+    { "id": "e9", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "k1", "focus": 0, "gap": 1} },
+    { "id": "e8", "type": "arrow", "isDeleted": false, "startBinding": {"elementId": "alpha-box", "focus": 0, "gap": 1}, "endBinding": {"elementId": "beta-box", "focus": 0, "gap": 1} },
+    { "id": "zulu-box", "type": "rectangle", "isDeleted": false },
+    { "id": "zulu-box-text", "type": "text", "isDeleted": false, "containerId": "zulu-box", "text": "Zulu", "originalText": "Zulu" }
+  ]
+}

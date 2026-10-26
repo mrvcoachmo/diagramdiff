@@ -1,0 +1,18 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "alpha-box", "type": "rectangle", "isDeleted": false },
+    { "id": "alpha-box-text", "type": "text", "isDeleted": false, "containerId": "alpha-box", "text": "Alpha", "originalText": "Alpha" },
+    { "id": "beta-box", "type": "rectangle", "isDeleted": false },
+    { "id": "beta-box-text", "type": "text", "isDeleted": false, "containerId": "beta-box", "text": "Beta", "originalText": "Beta" },
+    { "id": "pay-box", "type": "rectangle", "isDeleted": false },
+    { "id": "pay-box-text", "type": "text", "isDeleted": false, "containerId": "pay-box", "text": "Pay", "originalText": "Pay" },
+    { "id": "gateway-box", "type": "rectangle", "isDeleted": false },
+    { "id": "gateway-box-text", "type": "text", "isDeleted": false, "containerId": "gateway-box", "text": "Pay Gateway", "originalText": "Pay Gateway" },
+    { "id": "lower-box", "type": "rectangle", "isDeleted": false },
+    { "id": "lower-box-text", "type": "text", "isDeleted": false, "containerId": "lower-box", "text": "alpha", "originalText": "alpha" },
+    { "id": "k1", "type": "rectangle", "isDeleted": false },
+    { "id": "k2", "type": "rectangle", "isDeleted": false }
+  ]
+}

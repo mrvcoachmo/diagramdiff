@@ -1,0 +1,21 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "elements": [
+    { "id": "store-box", "type": "rectangle", "isDeleted": false, "boundElements": [{ "id": "store-text", "type": "text" }, { "id": "no-binding", "type": "arrow" }] },
+    { "id": "store-text", "type": "text", "isDeleted": false, "containerId": "store-box", "text": "Store", "originalText": "Store" },
+    { "id": "cache-box", "type": "rectangle", "isDeleted": true },
+    { "id": "to-arrow", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "store-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "to-missing", "focus": 0, "gap": 1 } },
+    { "id": "to-arrow-text", "type": "text", "isDeleted": false, "containerId": "to-arrow", "text": "arrow", "originalText": "arrow" },
+    { "id": "to-bound-text", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "store-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "store-text", "focus": 0, "gap": 1 } },
+    { "id": "to-bound-text-text", "type": "text", "isDeleted": false, "containerId": "to-bound-text", "text": "bound text", "originalText": "bound text" },
+    { "id": "to-missing", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "store-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "no-such-box", "focus": 0, "gap": 1 } },
+    { "id": "to-missing-text", "type": "text", "isDeleted": false, "containerId": "to-missing", "text": "missing id", "originalText": "missing id" },
+    { "id": "from-tombstone", "type": "arrow", "isDeleted": false, "startBinding": { "elementId": "cache-box", "focus": 0, "gap": 1 }, "endBinding": { "elementId": "store-box", "focus": 0, "gap": 1 } },
+    { "id": "from-tombstone-text", "type": "text", "isDeleted": false, "containerId": "from-tombstone", "text": "tombstone", "originalText": "tombstone" },
+    { "id": "no-binding", "type": "arrow", "isDeleted": false, "startBinding": null, "endBinding": null },
+    { "id": "no-binding-text", "type": "text", "isDeleted": false, "containerId": "no-binding", "text": "no binding", "originalText": "no binding" },
+    { "id": "no-element-id", "type": "arrow", "isDeleted": false, "startBinding": { "focus": 0, "gap": 1 }, "endBinding": { "elementId": null, "focus": 0, "gap": 1 } },
+    { "id": "no-element-id-text", "type": "text", "isDeleted": false, "containerId": "no-element-id", "text": "no element id", "originalText": "no element id" }
+  ]
+}

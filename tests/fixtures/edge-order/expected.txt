@@ -1,0 +1,13 @@
+old.excalidraw → new.excalidraw: 0 removed, 12 added
++ rectangle "Zulu"
++ arrow "Alpha" → "Beta"
++ arrow "Alpha" → "Beta" : "Say \"hi\" now"
++ arrow "Alpha" → "Beta" : "sync"
++ arrow "Alpha" → #k1
++ arrow "Alpha" → (unconnected)
++ arrow "Pay" → "Alpha"
++ arrow "Pay Gateway" → "Alpha"
++ arrow "alpha" → "Alpha"
++ arrow #k1 → "Beta"
++ arrow #k2 → "Alpha"
++ arrow (unconnected) → "Alpha"

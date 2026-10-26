@@ -1,0 +1,7 @@
+old.excalidraw → new.excalidraw: 3 removed, 3 added
+- rectangle "Legacy"
+- arrow "Client" → "Billing"
+- arrow "Legacy" → "Billing"
++ rectangle "Audit"
++ arrow "Client" → "Invoicing"
++ arrow "Invoicing" → "Audit"
